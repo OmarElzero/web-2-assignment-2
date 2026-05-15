@@ -45,3 +45,4 @@ class TmdbService
         ], $params));
     }
 }
+.
