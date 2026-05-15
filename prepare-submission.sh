@@ -31,6 +31,7 @@ rsync -a \
   --exclude='node_modules' \
   --exclude='.git' \
   --exclude='.env' \
+  --exclude='env.team' \
   --exclude='composer.phar' \
   --exclude='.DS_Store' \
   --exclude='**/.DS_Store' \

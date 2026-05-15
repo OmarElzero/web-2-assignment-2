@@ -54,6 +54,23 @@ Indexes:
 
 ## Quick dev setup
 
+### Private team — zero manual `.env` (recommended for your group)
+
+After clone, **one command** (requires PHP 8.x + Composer installed):
+
+```bash
+./setup-dev.sh
+php artisan serve
+```
+
+This copies **`env.team` → `.env`**, installs Composer packages, runs **`migrate --seed`** (seeders skip if data already exists), and clears config cache.
+
+Teammates who cannot run shell scripts (Windows without Git Bash): same steps by hand — `composer install`, `cp env.team .env`, `php artisan migrate --seed`, `php artisan serve`.
+
+**Do not** put `env.team` in the course submission zip (the script `prepare-submission.sh` already excludes it).
+
+### Individual setup (no shared `env.team`)
+
 1. Install dependencies:
 ```bash
 composer install
