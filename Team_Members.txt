@@ -1,11 +1,6 @@
-Team Number: 00
-
-Member 1: [Full Name] - [Student ID]
-Member 2: [Full Name] - [Student ID]
-Member 3: [Full Name] - [Student ID]
-Member 4: [Full Name] - [Student ID]
-Member 5: [Full Name] - [Student ID]
-Member 6: [Full Name] - [Student ID]
-Member 7: [Full Name] - [Student ID]
-
-NOTE: Replace team number "00" and all placeholder names/IDs with your actual team details before uploading.
+Team Number: 46
+Members:
+Nour Hany Salem - 20230447
+Rawan Khaled - 20231062
+Zeyad Mustafa - 20230162
+Omar Betawy - 20230263
