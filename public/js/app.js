@@ -792,7 +792,7 @@ async function loadPopularIntoGrid() {
     const data = await fetchPopularMovies(1);
     renderMovies(data.results || []);
   } catch (err) {
-    setErrorState("Failed to load movies.");
+    setErrorState(err?.message || "Failed to load movies.");
   } finally {
     setLoadingState(false);
   }
@@ -805,7 +805,7 @@ async function loadMoviesByGenre(genreId) {
     const data = await fetchFromTmdb("/discover/movie", { with_genres: genreId });
     renderMovies(data.results || []);
   } catch (err) {
-    setErrorState("Failed to filter movies.");
+    setErrorState(err?.message || "Failed to filter movies.");
   } finally {
     setLoadingState(false);
   }
@@ -820,7 +820,7 @@ async function runSearch(query) {
     const response = await fetchFromTmdb("/search/movie", { query: query.trim(), include_adult: false });
     renderMovies(response.results || []);
   } catch (err) {
-    setErrorState("Search failed.");
+    setErrorState(err?.message || "Search failed.");
   } finally {
     setLoadingState(false);
   }

@@ -22,12 +22,26 @@ class TmdbService
         return ! empty($this->getApiKey());
     }
 
+    public function usesBearerToken(): bool
+    {
+        $key = $this->getApiKey();
+
+        return is_string($key) && str_contains($key, '.');
+    }
+
     public function request(string $path, array $params = []): Response
     {
-        return Http::baseUrl($this->getBaseUrl())
-            ->get($path, array_merge([
-                'api_key' => $this->getApiKey(),
-                'language' => 'en-US',
-            ], $params));
+        $params = array_merge(['language' => 'en-US'], $params);
+        $client = Http::baseUrl($this->getBaseUrl());
+
+        if ($this->usesBearerToken()) {
+            return $client
+                ->withToken($this->getApiKey())
+                ->get($path, $params);
+        }
+
+        return $client->get($path, array_merge([
+            'api_key' => $this->getApiKey(),
+        ], $params));
     }
 }
