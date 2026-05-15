@@ -79,8 +79,12 @@ function isUserLoggedIn() {
 }
 
 function getErrorMessage(result, fallbackMessage) {
-  if (result && result.error && typeof result.error.message === "string") {
+  if (!result || typeof result !== "object") return fallbackMessage;
+  if (result.error && typeof result.error.message === "string") {
     return result.error.message;
+  }
+  if (typeof result.message === "string" && result.message.trim()) {
+    return result.message;
   }
   return fallbackMessage;
 }

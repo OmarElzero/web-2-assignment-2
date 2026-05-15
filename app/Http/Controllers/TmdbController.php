@@ -18,8 +18,10 @@ class TmdbController extends Controller
         if (! $this->tmdb->isConfigured()) {
             return response()->json([
                 'ok' => false,
-                'error' => ['message' => 'TMDB_API_KEY is not configured. Add it to .env'],
-            ], 500);
+                'error' => [
+                    'message' => 'TMDB_API_KEY is not configured. Copy .env.example to .env, set TMDB_API_KEY (TMDb v3 API key or v4 Read Access Token), then run php artisan config:clear.',
+                ],
+            ], 503);
         }
 
         $response = $this->tmdb->request($path, $params);
