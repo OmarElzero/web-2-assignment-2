@@ -95,5 +95,5 @@ php artisan migrate
 
 - Include `Team_Members.txt` with team number and members.
 - Include `database/database.sqlite` or SQL dump in `database/`.
-- Delete `vendor/` before compressing per assignment rules.
-- Archive as `YourTeamNumber_ASSIGNMENT-2.zip`.
+- Delete `vendor/` before compressing.
+- Archive as `TeamNumber_ASSIGNMENT-2.zip`.
