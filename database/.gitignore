@@ -1,1 +1,5 @@
-*.sqlite*
+# Ignore SQLite temporary files only.
+# database.sqlite is REQUIRED for Assignment 2 submission — do not ignore it.
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm

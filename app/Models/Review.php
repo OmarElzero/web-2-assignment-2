@@ -4,26 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\Review;
 
-class Movie extends Model
+class Review extends Model
 {
     protected $fillable = [
         'user_id',
-        'imdb_id',
-        'title',
-        'year',
-        'genre',
-        'poster_path',
-        'poster_url',
-        'status',
+        'movie_id',
         'rating',
+        'text',
     ];
 
     protected $casts = [
         'rating' => 'integer',
-        'year' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -33,8 +25,8 @@ class Movie extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function reviews(): HasMany
+    public function movie(): BelongsTo
     {
-        return $this->hasMany(Review::class);
+        return $this->belongsTo(Movie::class);
     }
 }

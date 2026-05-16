@@ -1,99 +1,133 @@
-# ONBOARDING — Movie Tracker (Laravel migration of Phase 1 SPA)
+# ONBOARDING — MovieReview Laravel App
 
-## Abstracted Summary
-This project is a Single-Page Application (SPA) for tracking movies (personal lists, ratings, and details via TMDb). Phase‑1 used plain PHP + AJAX with a MySQL schema; Phase‑2 migrates the app into a Laravel MVC project using:
+## What this app is
 
-- Laravel (controllers, Blade views, Eloquent)
-- SQLite (or MySQL) via Laravel migrations
-- PHP 8.x, Composer packages
-- Frontend: original JS ported into Blade + static assets
-- TMDb as the third-party API (server-side proxy recommended; API key in `.env`)
+This is a Laravel migration of the original Phase 1 Movie Review SPA. It provides:
 
-## Feature List
+- User registration and login with Laravel Sanctum token authentication.
+- Movie watchlist CRUD for logged-in users.
+- TMDb proxy endpoints for search, popular movies, details, genres, and discovery.
+- Server-side review storage and retrieval.
+- Upload endpoints for user avatars and movie posters.
+- A Blade-based SPA shell and JavaScript UI.
+- SQLite support for local development and fast testing.
 
-- User accounts: sign-up, login, role (`user` | `admin`), status (`active` | `disabled`).
-- Movie CRUD: create, read, update, delete movie entries (title, imdb id, year, genre, poster, status, rating).
-- TMDb integration: search movies, show popular, show detailed metadata (credits).
-- File handling for avatars/posters: store file on server and save path in DB.
-- Server-side validation using Laravel `FormRequest`s.
-- Blade master layout with `header`/`footer` includes and SPA entry view.
-- Automated tests: at least one Feature test and unit tests (Phase‑2 requirement).
+## Environment configuration
 
-## Database Schema Map
+Copy `.env.example` to `.env` and set these values:
 
-### Table: `users`
-- `id` (bigint, primary, auto-increment)
-- `full_name` (varchar(100), NOT NULL)
-- `email` (varchar(100), NOT NULL, UNIQUE)
-- `password_hash` (varchar(255), NOT NULL)
-- `role` (enum: 'user','admin') — default 'user'
-- `status` (enum: 'active','disabled') — default 'active'
-- `avatar_path` (varchar(255), NULL)
-- `created_at` (datetime)
-- `updated_at` (datetime)
+- `APP_KEY` — generate with `php artisan key:generate`
+- `TMDB_API_KEY` — your TMDb API key
+- `FILESYSTEM_DISK=public` — the app stores uploaded avatars/posters in `storage/app/public`
+- `DB_CONNECTION=sqlite` and `DB_DATABASE=database/database.sqlite`
 
-Relationships:
-- `users.id` → `movies.user_id` (1-to-many). Deleting a user cascades their movies.
+If using the shared team helper file, run:
 
-### Table: `movies`
-- `id` (bigint, primary, auto-increment)
-- `user_id` (bigint, foreign key → `users.id`, ON DELETE CASCADE)
-- `imdb_id` (varchar(20), NULL)
-- `title` (varchar(255), NOT NULL)
-- `year` (integer, NULL)
-- `genre` (varchar(100), NULL)
-- `poster_path` (varchar(255), NULL)
-- `poster_url` (varchar(500), NULL)
-- `status` (enum: 'want_to_watch','watching','watched','dropped') — default 'want_to_watch'
-- `rating` (unsigned tinyint, NULL) — 1..10
-- `created_at` (datetime)
-- `updated_at` (datetime)
+```bash
+./setup-dev.sh
+```
 
-Indexes:
-- `movies.user_id`
+Otherwise:
 
-## Quick dev setup
-
-1. Install dependencies:
 ```bash
 composer install
 cp .env.example .env
 php artisan key:generate
-```
-2. Use SQLite (recommended for assignment):
-```bash
 touch database/database.sqlite
-# set DB_CONNECTION=sqlite in .env
-php artisan migrate
+php artisan storage:link
+php artisan migrate --seed
+php artisan config:clear
+php artisan serve --host=127.0.0.1 --port=8000
 ```
-3. Add `TMDB_API_KEY` to `.env` (do not commit `.env`).
 
-## API endpoints (JSON)
+## Required environment variables
 
-- `GET /api/movies` — list movies (admin => all; otherwise => user's movies)
-- `POST /api/movies` — create movie
-- `GET /api/movies/{id}` — movie details
-- `PUT /api/movies/{id}` — update
-- `DELETE /api/movies/{id}` — delete
+- `APP_NAME`
+- `APP_ENV`
+- `APP_KEY`
+- `APP_URL`
+- `DB_CONNECTION`
+- `DB_DATABASE`
+- `FILESYSTEM_DISK`
+- `TMDB_API_KEY`
+- `TMDB_BASE_URL`
 
-## Validation summary (server-side)
+## New backend features added
 
-- `title`: required, string, max 255
-- `imdb_id`: nullable, string, max 20
-- `year`: nullable, integer, between 1888 and (current year + 2)
-- `genre`: nullable, string, max 100
-- `poster_path`: nullable, string, max 255
-- `poster_url`: nullable, valid URL, max 500
-- `status`: required, one of [want_to_watch, watching, watched, dropped]
-- `rating`: nullable, integer between 1 and 10
+### Reviews
 
-## Tests
+- `reviews` table with `user_id`, `movie_id`, `rating`, and `text`.
+- `Review` model and `ReviewController`.
+- Public review listing: `GET /api/reviews/movie/{movie}`.
+- Authenticated review posting: `POST /api/reviews`.
+- Authenticated review listing for current user: `GET /api/reviews/user`.
+- Review editing/deleting for owners and admins.
 
-- Add at least one Feature test (end-to-end HTTP) and unit tests for validation.
+### Uploads
 
-## Packaging (submission)
+- `UploadController` with secure file validation.
+- Avatar upload: `POST /api/users/upload-avatar.php` (authenticated).
+- Movie poster upload: `POST /api/movies/upload-poster.php` (authenticated).
+- Files are stored on the `public` disk and returned as accessible URLs.
 
-- Include `Team_Members.txt` with team number and members.
-- Include `database/database.sqlite` or SQL dump in `database/`.
-- Delete `vendor/` before compressing.
-- Archive as `TeamNumber_ASSIGNMENT-2.zip`.
+## API endpoints
+
+### Authentication
+
+- `POST /api/users/register.php`
+- `POST /api/users/login.php`
+- `POST /api/users/logout.php`
+
+### Movie CRUD
+
+- `GET /api/movies`
+- `POST /api/movies`
+- `GET /api/movies/{id}`
+- `PUT /api/movies/{id}`
+- `DELETE /api/movies/{id}`
+
+### Reviews
+
+- `GET /api/reviews/movie/{movie}`
+- `GET /api/reviews/user`
+- `POST /api/reviews`
+- `PUT /api/reviews/{review}`
+- `DELETE /api/reviews/{review}`
+
+### Uploads
+
+- `POST /api/users/upload-avatar.php`
+- `POST /api/movies/upload-poster.php`
+
+### TMDb proxy
+
+- `GET /api/tmdb/genres.php`
+- `GET /api/tmdb/popular.php`
+- `GET /api/tmdb/details.php`
+- `GET /api/tmdb/discover.php`
+- `GET /api/tmdb/search.php`
+
+## Database schema summary
+
+### `users`
+- `id`, `full_name`, `email`, `password_hash`, `role`, `status`, `avatar_path`, `created_at`, `updated_at`
+
+### `movies`
+- `id`, `user_id`, `imdb_id`, `title`, `year`, `genre`, `poster_path`, `poster_url`, `status`, `rating`, `created_at`, `updated_at`
+
+### `reviews`
+- `id`, `user_id`, `movie_id`, `rating`, `text`, `created_at`, `updated_at`
+
+## Notes
+
+- The app uses Sanctum bearer tokens with `Authorization: Bearer <token>`.
+- CORS is open for API calls, and the `public` disk is configured for uploads.
+- Run `php artisan config:clear` after updating `.env`.
+
+## Packaging
+
+- Include `Team_Members.txt`.
+- Include `database/database.sqlite` or a SQL dump under `database/`.
+- Remove `vendor/` before zipping.
+- Archive as `YourTeamNumber_ASSIGNMENT-2.zip`.
+

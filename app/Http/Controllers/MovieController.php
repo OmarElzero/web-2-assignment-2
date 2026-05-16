@@ -10,11 +10,6 @@ use Illuminate\Http\JsonResponse;
 
 class MovieController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();

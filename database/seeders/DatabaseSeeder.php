@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -12,7 +11,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create a default admin user for testing
-        $this->call([\Database\Seeders\AdminUserSeeder::class]);
+        $this->call([
+            AdminUserSeeder::class,
+            SampleMoviesSeeder::class,
+        ]);
     }
 }

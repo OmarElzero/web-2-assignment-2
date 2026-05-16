@@ -1,12 +1,15 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.app')
 
-        <title>Laravel</title>
+@section('title', 'MovieReview - Discover & Review Movies')
 
-        <!-- Fonts -->
+@section('content')
+    <section class="hero">
+        <h1>Find Your Next Favorite Movie</h1>
+        <div id="movie-grid">
+            <!-- Movies will be loaded here by JavaScript -->
+        </div>
+    </section>
+@endsection
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
 
