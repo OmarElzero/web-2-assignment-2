@@ -1,66 +1,82 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# web-2-assignment-2 — Movie Tracker
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel-based Movie Tracker single-page application. Authenticated users can maintain a personal list of movies (title, year, genre, poster, watch status, and rating), while admins can view and manage every user's movies. This is a Phase 2 (Laravel MVC) rewrite of an earlier plain PHP + AJAX version of the same app, as documented in `ONBOARDING.md`.
 
-## About Laravel
+![Last Commit](https://img.shields.io/github/last-commit/OmarElzero/web-2-assignment-2)
+![Top Language](https://img.shields.io/github/languages/top/OmarElzero/web-2-assignment-2)
+![Repo Size](https://img.shields.io/github/repo-size/OmarElzero/web-2-assignment-2)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **User accounts** with `role` (`user` / `admin`) and `status` (`active` / `disabled`) fields.
+- **Movie CRUD API** — `GET/POST /api/movies`, `GET/PUT/DELETE /api/movies/{movie}`, protected by `auth` middleware.
+- **Role-based access control** — regular users only see/manage their own movies; admins see and manage every user's movies (`MovieController::index`, `show`, `update` check `$user->isAdmin()`).
+- **Per-movie fields**: IMDb ID, title, year, genre, poster path/URL, watch `status` (`want_to_watch`, `watching`, `watched`, `dropped`), and a rating.
+- **Server-side validation** via `StoreMovieRequest` / `UpdateMovieRequest` form request classes.
+- **TMDb integration** planned/documented for movie search and metadata (per `ONBOARDING.md`).
+- **Single-Page Application shell** served from a Blade view (`spa.index`) with the API consumed client-side.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Tech Stack
 
-## Learning Laravel
+- **PHP 8.1+** with the **Laravel 10** framework
+- **Eloquent ORM** for the `User` and `Movie` models (foreign key `movies.user_id → users.id`, cascade delete)
+- **Laravel Sanctum** for API/token authentication
+- **SQLite/MySQL** via Laravel migrations
+- **PHPUnit** for testing (Feature and Unit test suites)
+- **Composer** for PHP dependency management, **npm/Vite** for front-end assets
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Project Structure
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```
+app/Http/Controllers/MovieController.php   # Movie CRUD + role-based access logic
+app/Http/Requests/                          # StoreMovieRequest / UpdateMovieRequest validation
+app/Models/Movie.php                        # Movie Eloquent model (fillable fields, casts, user() relation)
+app/Models/User.php                         # User model (role/status, movies relation)
+database/migrations/                        # users, movies, and auth-related table schemas
+routes/web.php                              # SPA entry route + authenticated /api/movies routes
+routes/api.php                              # Sanctum-protected /user route
+resources/views/spa.index.blade.php         # SPA shell view
+ONBOARDING.md                                # Project background: Phase 1 -> Phase 2 (Laravel) migration notes
+tests/                                       # Feature and Unit test scaffolding
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Installation
 
-## Laravel Sponsors
+```bash
+git clone https://github.com/OmarElzero/web-2-assignment-2.git
+cd web-2-assignment-2
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+npm install && npm run build
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Usage
 
-### Premium Partners
+```bash
+php artisan serve
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Then authenticate and call the movie endpoints, e.g.:
 
-## Contributing
+```bash
+curl -X GET http://localhost:8000/api/movies \
+  -H "Accept: application/json" \
+  --cookie "laravel_session=<session>"
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Demo
 
-## Code of Conduct
+No live demo is available for this project.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Testing
 
-## Security Vulnerabilities
+```bash
+php artisan test
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Author:** OmarElzero · [GitHub](https://github.com/OmarElzero)
+_Last updated: 2026-08-23_
